@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, X, FileText, CheckCircle, Loader2 } from 'lucide-react';
+import { Upload, CheckCircle, Loader2, FileText } from 'lucide-react';
 
 interface FileUploaderProps {
   onFileSelect: (file: File) => void;
@@ -43,6 +43,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect, status, progr
   };
 
   const triggerInput = () => {
+    if (status !== 'idle') return;
     fileInputRef.current?.click();
   };
 
@@ -59,8 +60,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect, status, progr
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onClick={triggerInput}
-            className={`relative border-2 border-dashed rounded-[2rem] p-12 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 glass group
-              ${isDragging ? 'border-blue-500 bg-blue-500/10 scale-[1.02]' : 'border-white/10 hover:border-white/20'}`}
+            className={`relative border-2 border-dashed rounded-[2.5rem] p-16 flex flex-col items-center justify-center cursor-pointer transition-all duration-500 overflow-hidden
+              ${isDragging ? 'border-blue-500 bg-blue-500/10 scale-[1.02]' : 'border-white/10 hover:border-white/20 hover:bg-white/5'}`}
+            style={{ backdropFilter: 'blur(20px)', background: 'rgba(255, 255, 255, 0.02)' }}
           >
             <input 
               type="file" 
@@ -69,46 +71,35 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect, status, progr
               onChange={handleFileChange}
               accept=".pdf,.docx,.pptx"
             />
-            <div className={`p-6 rounded-full bg-white/5 mb-6 group-hover:scale-110 group-hover:bg-white/10 transition-all duration-500 ${isDragging ? 'bg-blue-500/20 text-blue-400' : 'text-white/40'}`}>
-              <Upload size={48} />
+            <div className={`p-8 rounded-full bg-white/5 mb-8 transition-all duration-700 ${isDragging ? 'bg-blue-500/20 text-blue-400 scale-110 shadow-[0_0_30px_rgba(59,130,246,0.2)]' : 'text-white/20'}`}>
+              <Upload size={56} />
             </div>
-            <h3 className="text-xl font-medium mb-2 text-white/80">拖拽文件到此处，或点击上传</h3>
-            <p className="text-sm text-white/40">支持 PDF, Word (DOCX), PPT (PPTX) 格式</p>
+            <h3 className="text-2xl font-bold mb-4 text-white/80">上传或拖拽文件</h3>
+            <p className="text-sm text-white/30 tracking-widest font-medium">支持 PDF, Word (DOCX), PPT (PPTX) 格式</p>
           </motion.div>
         )}
 
-        {(status === 'uploading' || status === 'processing') && (
+        {status === 'processing' && (
           <motion.div
             key="processing"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="glass rounded-[2rem] p-12 flex flex-col items-center justify-center relative overflow-hidden"
+            className="rounded-[2.5rem] p-16 flex flex-col items-center justify-center relative overflow-hidden"
+            style={{ background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(25px)', border: '1px solid rgba(255, 255, 255, 0.1)' }}
           >
-            {/* Liquid Progress Glow */}
-            <div className="absolute inset-x-0 bottom-0 h-1 bg-white/5">
-              <motion.div 
-                className="h-full bg-gradient-to-r from-blue-500 to-cyan-400"
-                initial={{ width: "0%" }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 3, repeat: Infinity }}
-              />
-            </div>
+            {/* 动态扫描线 */}
+            <motion.div 
+              className="absolute left-0 right-0 h-[2px] bg-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.6)] z-20"
+              animate={{ top: ['0%', '100%', '0%'] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+            />
             
-            <Loader2 size={48} className="text-blue-400 animate-spin mb-6" />
-            <h3 className="text-xl font-medium mb-4 text-white">{progressText || '正在处理中...'}</h3>
-            <div className="flex items-center space-x-2 text-white/50 text-sm">
-              <FileText size={16} />
-              <span>{selectedFile?.name}</span>
+            <Loader2 size={64} className="text-blue-500 animate-spin mb-8" />
+            <h3 className="text-2xl font-bold mb-6 text-white tracking-tight">{progressText || '转换引擎正在全速运转...'}</h3>
+            <div className="flex items-center space-x-3 px-6 py-2 rounded-full bg-white/5 border border-white/5 text-white/40 text-sm font-medium">
+              <FileText size={16} className="text-blue-400" />
+              <span className="truncate max-w-[200px]">{selectedFile?.name}</span>
             </div>
-
-            {/* Scanning line animation for watermark removal */}
-            {progressText?.includes('扫描') && (
-               <motion.div 
-                 className="absolute left-0 right-0 h-1 bg-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.5)] z-20"
-                 animate={{ top: ['0%', '100%', '0%'] }}
-                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-               />
-            )}
           </motion.div>
         )}
 
@@ -117,26 +108,28 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect, status, progr
             key="completed"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="glass rounded-[2rem] p-12 flex flex-col items-center justify-center text-center"
+            className="rounded-[2.5rem] p-16 flex flex-col items-center justify-center text-center"
+            style={{ background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(25px)', border: '1px solid rgba(255, 255, 255, 0.1)' }}
           >
             <motion.div 
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="p-6 rounded-full bg-green-500/20 text-green-400 mb-6"
+              transition={{ type: "spring", stiffness: 200 }}
+              className="p-8 rounded-full bg-blue-500/20 text-blue-400 mb-8 border border-blue-500/30"
             >
-              <CheckCircle size={48} />
+              <CheckCircle size={64} />
             </motion.div>
-            <h3 className="text-2xl font-bold mb-2 text-white">转换完成！</h3>
-            <p className="text-white/60 mb-8">您的文件已准备就绪，系统将自动开始下载。</p>
+            <h3 className="text-3xl font-black mb-4 text-white">转换已完成！</h3>
+            <p className="text-white/40 mb-12 font-medium">您的文档已就绪，正在通过浏览器发起下载...</p>
             
             <button
               onClick={() => {
                 setSelectedFile(null);
                 onReset();
               }}
-              className="px-8 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium transition-all"
+              className="px-10 py-4 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold transition-all shadow-xl hover:shadow-white/5"
             >
-              继续处理下一个文件
+              处理另一个文档
             </button>
           </motion.div>
         )}

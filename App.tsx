@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Github, FileText, Presentation } from 'lucide-react';
@@ -23,6 +22,7 @@ const App: React.FC = () => {
   const handleBack = () => {
     setSelectedToolId(null);
     setStatus('idle');
+    setProgressText('');
   };
 
   const handleFileProcess = async (file: File) => {
@@ -42,7 +42,7 @@ const App: React.FC = () => {
       if (selectedToolId === ToolType.PDF_TO_WORD) ext = '.docx';
       if (selectedToolId === ToolType.PDF_TO_PPT) ext = '.pptx';
       
-      a.download = file.name.split('.')[0] + '_已转换' + ext;
+      a.download = `${file.name.split('.')[0]}_WilliamZhan_${Date.now()}${ext}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -52,40 +52,39 @@ const App: React.FC = () => {
     } catch (err) {
       console.error(err);
       setStatus('idle');
-      alert('处理过程中发生错误，请确保文件格式正确且未加密。');
+      alert('处理过程中发生错误，请重试。建议检查文件大小及是否包含密码。');
     }
   };
 
   return (
-    <div className="min-h-screen relative text-white selection:bg-blue-500/40 font-sans">
+    <div className="min-h-screen relative text-white selection:bg-blue-500/30 font-sans">
       <Background />
       
-      {/* 磨砂玻璃导航栏 */}
-      <nav className="fixed top-0 inset-x-0 z-50 h-24 px-10 flex items-center justify-between border-b border-white/10" style={{ backdropFilter: 'blur(25px)', background: 'rgba(5, 5, 10, 0.4)' }}>
-        <div className="flex items-center space-x-4 cursor-pointer" onClick={() => setSelectedToolId(null)}>
+      {/* 极简流体导航栏 */}
+      <nav className="fixed top-0 inset-x-0 z-50 h-24 px-10 flex items-center justify-between border-b border-white/5" style={{ backdropFilter: 'blur(40px)', background: 'rgba(2, 2, 5, 0.4)' }}>
+        <div className="flex items-center space-x-5 cursor-pointer group" onClick={() => setSelectedToolId(null)}>
           <motion.div 
-            whileHover={{ rotate: 180 }}
-            className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center font-black text-2xl shadow-lg shadow-blue-500/20"
+            whileHover={{ scale: 1.1, rotate: 180 }}
+            className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-700 flex items-center justify-center font-black text-2xl shadow-2xl shadow-blue-500/20"
           >
             W
           </motion.div>
           <div className="flex flex-col">
-            <span className="font-bold tracking-tighter text-xl leading-none">William.Zhan</span>
-            <span className="text-white/30 text-[10px] tracking-[0.2em] font-medium uppercase mt-1">Professional Doc Suite</span>
+            <span className="font-bold tracking-tighter text-2xl leading-none">William.Zhan</span>
+            <span className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-bold mt-1.5">效率实验室 · 文档处理</span>
           </div>
         </div>
-        <div className="hidden md:flex items-center space-x-10">
-          {['功能特性', '技术支持', '隐私承诺'].map((item) => (
-            <a key={item} href="#" className="text-sm font-medium text-white/40 hover:text-blue-400 transition-all tracking-wide">{item}</a>
+        <div className="hidden md:flex items-center space-x-12">
+          {['隐私协议', '关于实验室', '开发文档'].map((item) => (
+            <a key={item} href="#" className="text-sm font-semibold text-white/40 hover:text-blue-400 transition-all tracking-widest">{item}</a>
           ))}
-          <a href="https://github.com" target="_blank" className="px-6 py-2 rounded-full border border-white/10 hover:border-blue-400/50 hover:bg-blue-400/5 transition-all flex items-center space-x-2 text-sm">
-            <Github size={16} />
-            <span>开源代码</span>
+          <a href="https://github.com" target="_blank" className="p-3 rounded-full border border-white/10 hover:bg-blue-500/10 hover:border-blue-400/40 transition-all">
+            <Github size={20} className="text-white/60" />
           </a>
         </div>
       </nav>
 
-      <main className="pt-44 pb-24 px-6 container mx-auto relative z-10">
+      <main className="pt-48 pb-24 px-6 container mx-auto relative z-10">
         <AnimatePresence mode="wait">
           {!selectedToolId ? (
             <motion.div
@@ -93,31 +92,31 @@ const App: React.FC = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="text-center mb-24 max-w-4xl mx-auto">
+              <div className="text-center mb-32 max-w-5xl mx-auto">
                 <motion.div 
-                   initial={{ opacity: 0, scale: 0.9 }}
+                   initial={{ opacity: 0, scale: 0.8 }}
                    animate={{ opacity: 1, scale: 1 }}
-                   className="inline-block px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-bold tracking-widest mb-8 uppercase"
+                   className="inline-block px-5 py-2 rounded-full border border-blue-500/30 bg-blue-500/5 text-blue-400 text-[11px] font-black tracking-[0.4em] mb-12 uppercase"
                 >
-                  本地处理 · WebAssembly 驱动
+                  本地加密转换 · 100% 隐私安全
                 </motion.div>
-                <h1 className="text-6xl md:text-8xl font-black mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/20 tracking-tighter leading-[1.1]">
-                  重塑您的<br />文档工作流
+                <h1 className="text-6xl md:text-9xl font-black mb-10 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/30 tracking-tighter leading-[1.05]">
+                  重新定义<br />文档处理。
                 </h1>
                 <p className="text-xl text-white/40 leading-relaxed font-light max-w-2xl mx-auto">
-                  极致的 Apple 液态玻璃美学，配合顶级 WASM 文件引擎。所有转换均在浏览器本地安全完成，告别隐私泄露。
+                  基于先进的 WebAssembly 技术。所有转换均在浏览器沙盒中完成，文件永远不会上传至服务器，极致保护您的数据资产。
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
                 {TOOLS.map((tool, index) => (
                   <motion.div
                     key={tool.id}
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 + index * 0.1, duration: 0.8 }}
+                    transition={{ delay: 0.15 + index * 0.1, duration: 0.8 }}
                   >
                     <ToolCard tool={tool} onClick={handleToolClick} />
                   </motion.div>
@@ -127,35 +126,35 @@ const App: React.FC = () => {
           ) : (
             <motion.div
               key="tool-detail"
-              initial={{ opacity: 0, scale: 0.98, y: 40 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.02 }}
-              className="max-w-5xl mx-auto"
+              className="max-w-4xl mx-auto"
             >
               <button 
                 onClick={handleBack}
-                className="flex items-center text-white/30 hover:text-white mb-12 group transition-all font-medium"
+                className="flex items-center text-white/40 hover:text-white mb-16 group transition-all font-semibold tracking-widest uppercase text-xs"
               >
-                <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center mr-4 group-hover:border-white/30 group-hover:-translate-x-1 transition-all">
+                <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center mr-5 group-hover:border-white/30 group-hover:-translate-x-1 transition-all">
                   <ChevronLeft size={20} />
                 </div>
                 返回工具中心
               </button>
               
-              <div className="mb-16 text-center">
+              <div className="mb-20 text-center">
                 <motion.div 
                   layoutId={`icon-${selectedTool?.id}`}
-                  className={`inline-flex p-6 rounded-[2rem] bg-gradient-to-br ${selectedTool?.color} mb-8 shadow-2xl shadow-blue-500/10`}
-                  style={{ backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)' }}
+                  className={`inline-flex p-8 rounded-[2.5rem] bg-gradient-to-br ${selectedTool?.color} mb-10 shadow-3xl shadow-blue-500/20 border border-white/10`}
+                  style={{ backdropFilter: 'blur(40px)' }}
                 >
                    {selectedTool && (
                      <div className="text-blue-400">
-                        {selectedTool.title.includes('PPT') ? <Presentation size={48} /> : <FileText size={48} />}
+                        {selectedTool.title.includes('PPT') ? <Presentation size={64} /> : <FileText size={64} />}
                      </div>
                    )}
                 </motion.div>
-                <h2 className="text-5xl font-black mb-6 tracking-tight">{selectedTool?.title}</h2>
-                <p className="text-white/40 text-lg font-light max-w-xl mx-auto">{selectedTool?.description}</p>
+                <h2 className="text-6xl font-black mb-6 tracking-tight leading-tight">{selectedTool?.title}</h2>
+                <p className="text-white/40 text-xl font-light max-w-2xl mx-auto leading-relaxed">{selectedTool?.description}</p>
               </div>
 
               <FileUploader 
@@ -165,16 +164,15 @@ const App: React.FC = () => {
                 onReset={() => setStatus('idle')}
               />
               
-              <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-12 max-w-4xl mx-auto border-t border-white/5 pt-16">
+              <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-white/5 pt-20">
                 {[
-                  { title: '本地隐私', desc: '文件不出浏览器，100% 隐私保护。' },
-                  { title: '毫秒响应', desc: 'WebAssembly 带来的极致处理速度。' },
-                  { title: '智能还原', desc: '深度解析文档层级，高精度还原排版。' }
-                ].map((feature, i) => (
-                  <div key={i} className="flex flex-col items-center text-center group">
-                    <div className="w-14 h-14 rounded-3xl glass flex items-center justify-center mb-6 text-blue-400 group-hover:scale-110 transition-transform font-bold border border-white/10">0{i+1}</div>
-                    <h4 className="font-bold text-lg mb-3 text-white/80 group-hover:text-white">{feature.title}</h4>
-                    <p className="text-sm text-white/30 leading-relaxed group-hover:text-white/50">{feature.desc}</p>
+                  { title: '私有环境', desc: '文件不出浏览器沙盒' },
+                  { title: '无缝导出', desc: '完美还原排版细节' },
+                  { title: '离线可用', desc: '一次加载，随时使用' }
+                ].map((item, i) => (
+                  <div key={i} className="text-center group">
+                    <div className="text-[11px] font-black text-blue-500/50 uppercase tracking-[0.4em] mb-3 group-hover:text-blue-400 transition-colors">{item.title}</div>
+                    <div className="text-base text-white/30 group-hover:text-white/60 transition-colors font-light">{item.desc}</div>
                   </div>
                 ))}
               </div>
@@ -183,9 +181,9 @@ const App: React.FC = () => {
         </AnimatePresence>
       </main>
 
-      <footer className="py-16 text-center border-t border-white/5 bg-[#020205]/40" style={{ backdropFilter: 'blur(20px)' }}>
-        <p className="text-white/10 text-xs font-bold tracking-[0.3em] uppercase mb-4">William.Zhan Digital Laboratory</p>
-        <p className="text-white/30 text-sm">© 2025 全能文档处理工具箱 · 极客精神驱动</p>
+      <footer className="py-20 text-center border-t border-white/5 bg-[#020205]/60" style={{ backdropFilter: 'blur(40px)' }}>
+        <p className="text-white/10 text-[10px] font-black tracking-[0.6em] uppercase mb-5">William.Zhan Digital Innovation Laboratory</p>
+        <p className="text-white/40 text-sm font-light">© 2025 全能文档处理套件 · 隐私驱动型工具 · 极客精神</p>
       </footer>
     </div>
   );
