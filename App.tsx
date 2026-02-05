@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Github, FileText, Presentation } from 'lucide-react';
+import { ChevronLeft, Github, FileText, Presentation, ShieldCheck, Zap, Globe } from 'lucide-react';
 import { ToolType } from './types.ts';
 import { TOOLS } from './constants.tsx';
 import Background from './components/Background.tsx';
@@ -52,7 +52,7 @@ const App: React.FC = () => {
     } catch (err) {
       console.error(err);
       setStatus('idle');
-      alert('处理过程中发生错误，请重试。建议检查文件大小及是否包含密码。');
+      alert('处理过程中发生错误，请重试。建议检查文件是否受损或存在密码保护。');
     }
   };
 
@@ -60,26 +60,29 @@ const App: React.FC = () => {
     <div className="min-h-screen relative text-white selection:bg-blue-500/30 font-sans">
       <Background />
       
-      {/* 极简流体导航栏 */}
+      {/* 极简流体导航栏 - 极致苹果毛玻璃 */}
       <nav className="fixed top-0 inset-x-0 z-50 h-24 px-10 flex items-center justify-between border-b border-white/5" style={{ backdropFilter: 'blur(40px)', background: 'rgba(2, 2, 5, 0.4)' }}>
         <div className="flex items-center space-x-5 cursor-pointer group" onClick={() => setSelectedToolId(null)}>
           <motion.div 
             whileHover={{ scale: 1.1, rotate: 180 }}
-            className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-700 flex items-center justify-center font-black text-2xl shadow-2xl shadow-blue-500/20"
+            className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-700 flex items-center justify-center font-black text-2xl shadow-2xl shadow-blue-500/20 border border-white/10"
           >
             W
           </motion.div>
           <div className="flex flex-col">
             <span className="font-bold tracking-tighter text-2xl leading-none">William.Zhan</span>
-            <span className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-bold mt-1.5">效率实验室 · 文档处理</span>
+            <span className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-bold mt-1.5">效率实验室 · 隐私优先</span>
           </div>
         </div>
         <div className="hidden md:flex items-center space-x-12">
-          {['隐私协议', '关于实验室', '开发文档'].map((item) => (
-            <a key={item} href="#" className="text-sm font-semibold text-white/40 hover:text-blue-400 transition-all tracking-widest">{item}</a>
-          ))}
-          <a href="https://github.com" target="_blank" className="p-3 rounded-full border border-white/10 hover:bg-blue-500/10 hover:border-blue-400/40 transition-all">
-            <Github size={20} className="text-white/60" />
+          <div className="flex items-center space-x-8">
+            <a href="#" className="text-sm font-semibold text-white/40 hover:text-blue-400 transition-all tracking-widest">功能</a>
+            <a href="#" className="text-sm font-semibold text-white/40 hover:text-blue-400 transition-all tracking-widest">隐私</a>
+            <a href="#" className="text-sm font-semibold text-white/40 hover:text-blue-400 transition-all tracking-widest">API</a>
+          </div>
+          <a href="https://github.com" target="_blank" className="px-6 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-blue-500/10 hover:border-blue-400/40 transition-all flex items-center space-x-2">
+            <Github size={18} className="text-white/60" />
+            <span className="text-sm font-bold">仓库</span>
           </a>
         </div>
       </nav>
@@ -98,15 +101,16 @@ const App: React.FC = () => {
                 <motion.div 
                    initial={{ opacity: 0, scale: 0.8 }}
                    animate={{ opacity: 1, scale: 1 }}
-                   className="inline-block px-5 py-2 rounded-full border border-blue-500/30 bg-blue-500/5 text-blue-400 text-[11px] font-black tracking-[0.4em] mb-12 uppercase"
+                   className="inline-flex items-center space-x-2 px-5 py-2 rounded-full border border-blue-500/30 bg-blue-500/5 text-blue-400 text-[11px] font-black tracking-[0.4em] mb-12 uppercase"
                 >
-                  本地加密转换 · 100% 隐私安全
+                  <Globe size={14} className="animate-pulse" />
+                  <span>本地加密转换 · 100% 隐私安全</span>
                 </motion.div>
                 <h1 className="text-6xl md:text-9xl font-black mb-10 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/30 tracking-tighter leading-[1.05]">
-                  重新定义<br />文档处理。
+                  文档转换<br />本该如此优雅。
                 </h1>
                 <p className="text-xl text-white/40 leading-relaxed font-light max-w-2xl mx-auto">
-                  基于先进的 WebAssembly 技术。所有转换均在浏览器沙盒中完成，文件永远不会上传至服务器，极致保护您的数据资产。
+                  基于先进的 WebAssembly 技术。所有转换均在浏览器沙盒中完成，文件永远不会上传至服务器。
                 </p>
               </div>
 
@@ -149,7 +153,9 @@ const App: React.FC = () => {
                 >
                    {selectedTool && (
                      <div className="text-blue-400">
-                        {selectedTool.title.includes('PPT') ? <Presentation size={64} /> : <FileText size={64} />}
+                        {selectedTool.id === ToolType.PDF_TO_PPT ? <Presentation size={64} /> : 
+                         selectedTool.id === ToolType.PDF_WATERMARK ? <ShieldCheck size={64} /> :
+                         <FileText size={64} />}
                      </div>
                    )}
                 </motion.div>
@@ -166,11 +172,14 @@ const App: React.FC = () => {
               
               <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-white/5 pt-20">
                 {[
-                  { title: '私有环境', desc: '文件不出浏览器沙盒' },
-                  { title: '无缝导出', desc: '完美还原排版细节' },
-                  { title: '离线可用', desc: '一次加载，随时使用' }
+                  { title: '私有沙盒', desc: '文件不出浏览器', icon: ShieldCheck },
+                  { title: '无损画质', desc: '极致排版还原', icon: Zap },
+                  { title: '极速响应', desc: 'WASM 引擎驱动', icon: Globe }
                 ].map((item, i) => (
                   <div key={i} className="text-center group">
+                    <div className="flex justify-center mb-4 text-blue-500/30 group-hover:text-blue-400 transition-colors">
+                      <item.icon size={24} />
+                    </div>
                     <div className="text-[11px] font-black text-blue-500/50 uppercase tracking-[0.4em] mb-3 group-hover:text-blue-400 transition-colors">{item.title}</div>
                     <div className="text-base text-white/30 group-hover:text-white/60 transition-colors font-light">{item.desc}</div>
                   </div>
